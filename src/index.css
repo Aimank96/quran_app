@@ -1,0 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Noto+Naskh+Arabic:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-arabic: 'Amiri Quran', 'Noto Naskh Arabic', serif;
+}
