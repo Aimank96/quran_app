@@ -2,10 +2,11 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Audio files: publicly readable (no auth needed for playback)
+    // Audio files: require authentication to read
+    // Only authenticated users can download audio
     // Only service account (upload script) can write during initial bulk upload
     match /audio/{allPaths=**} {
-      allow read: if true;
+      allow read: if request.auth != null;
       allow write: if false; // uploads via service account only
     }
 

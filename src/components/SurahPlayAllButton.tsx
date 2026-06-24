@@ -1,4 +1,5 @@
 import { useAudio } from '../context/AudioContext';
+import { useAuth } from '../hooks/useAuth';
 
 interface SurahPlayAllButtonProps {
   surahNumber: number;
@@ -7,6 +8,7 @@ interface SurahPlayAllButtonProps {
 
 export function SurahPlayAllButton({ surahNumber, totalAyahs }: SurahPlayAllButtonProps) {
   const { status, currentAyah, surahPlayMode, playEntireSurah, stop } = useAudio();
+  const { user } = useAuth();
 
   const isThisSurahPlaying =
     surahPlayMode &&
@@ -14,6 +16,11 @@ export function SurahPlayAllButton({ surahNumber, totalAyahs }: SurahPlayAllButt
     (status === 'playing' || status === 'loading');
 
   function handleClick() {
+    if (!user) {
+      alert('Sila log masuk untuk mendengar audio');
+      return;
+    }
+    
     if (isThisSurahPlaying) {
       stop();
     } else {
@@ -24,13 +31,23 @@ export function SurahPlayAllButton({ surahNumber, totalAyahs }: SurahPlayAllButt
   return (
     <button
       onClick={handleClick}
+      disabled={!user}
       className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition ${
-        isThisSurahPlaying
+        !user
+          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          : isThisSurahPlaying
           ? 'bg-red-100 text-red-700 hover:bg-red-200'
           : 'bg-emerald-600 text-white hover:bg-emerald-700'
       }`}
     >
-      {isThisSurahPlaying ? (
+      {!user ? (
+        <>
+          <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+          </svg>
+          Log masuk untuk dengar
+        </>
+      ) : isThisSurahPlaying ? (
         <>
           <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
             <rect x="6" y="6" width="12" height="12" />

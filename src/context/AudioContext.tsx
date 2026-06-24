@@ -6,7 +6,10 @@ import {
   useCallback,
   type ReactNode,
 } from 'react';
-import { buildAudioUrl } from '../utils/audioUrl';
+import { getStorage, ref, getBlob } from 'firebase/storage';
+import { getAuth } from 'firebase/auth';
+import { buildAudioPath } from '../utils/audioUrl';
+import { cacheAudio, getCachedAudio } from '../utils/audioCache';
 import { RECITERS, type AudioState, type PlayingAyah, type Reciter } from '../types/audio';
 
 interface AudioContextValue extends AudioState {
@@ -52,13 +55,12 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   }
 
   const playAyahInternal = useCallback(
-    (ayah: PlayingAyah, surahPlayMode: boolean, totalAyahs: number, reciter: Reciter) => {
+    async (ayah: PlayingAyah, surahPlayMode: boolean, totalAyahs: number, reciter: Reciter) => {
       const audio = getAudio();
       clearAudioHandlers();
       audio.pause();
 
-      const url = buildAudioUrl(reciter.language, reciter.id, ayah.surahNumber, ayah.ayahNumberInSurah);
-      audio.src = url;
+      const cacheKey = `${reciter.language}/${reciter.id}/${ayah.surahNumber}/${ayah.ayahNumberInSurah}`;
 
       setState((prev) => ({
         ...prev,
@@ -69,16 +71,60 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         errorMessage: null,
       }));
 
-      audio.oncanplay = () => {
-        audio.play().catch(() => {
+      try {
+        // Check cache first
+        let blob = await getCachedAudio(cacheKey);
+
+        if (!blob) {
+          // Download from Firebase Storage (requires auth)
+          const auth = getAuth();
+          if (!auth.currentUser) {
+            setState((prev) => ({
+              ...prev,
+              status: 'error',
+              errorMessage: 'Sila log masuk untuk mendengar audio',
+            }));
+            return;
+          }
+
+          const storage = getStorage();
+          const path = buildAudioPath(reciter.language, reciter.id, ayah.surahNumber, ayah.ayahNumberInSurah);
+          const storageRef = ref(storage, path);
+          blob = await getBlob(storageRef);
+
+          // Cache to device
+          await cacheAudio(cacheKey, blob);
+        }
+
+        // Play from blob
+        const url = URL.createObjectURL(blob);
+        audio.src = url;
+
+        audio.oncanplay = () => {
+          audio.play().catch(() => {
+            setState((prev) => ({
+              ...prev,
+              status: 'error',
+              errorMessage: 'Gagal memainkan audio',
+            }));
+          });
+          setState((prev) => ({ ...prev, status: 'playing' }));
+        };
+
+        audio.onerror = () => {
           setState((prev) => ({
             ...prev,
             status: 'error',
-            errorMessage: 'Gagal memainkan audio',
+            errorMessage: 'Gagal memuat audio',
           }));
-        });
-        setState((prev) => ({ ...prev, status: 'playing' }));
-      };
+        };
+      } catch (err) {
+        setState((prev) => ({
+          ...prev,
+          status: 'error',
+          errorMessage: err instanceof Error ? err.message : 'Ralat tidak diketahui',
+        }));
+      }
 
       audio.onended = () => {
         const cur = stateRef.current;
