@@ -11,6 +11,7 @@ import { getAuth } from 'firebase/auth';
 import { buildAudioPath } from '../utils/audioUrl';
 import { cacheAudio, getCachedAudio } from '../utils/audioCache';
 import { RECITERS, type AudioState, type PlayingAyah, type Reciter } from '../types/audio';
+import { useDownloadConsent } from './DownloadConsentContext';
 
 interface AudioContextValue extends AudioState {
   playAyah: (surahNumber: number, ayahNumberInSurah: number) => void;
@@ -39,6 +40,8 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   // Use refs to access current state inside event handlers without stale closure
   const stateRef = useRef(state);
   stateRef.current = state;
+  const { requestConsent, showDonationModal } = useDownloadConsent();
+  const surahDownloadModeRef = useRef<boolean>(false);
 
   function getAudio(): HTMLAudioElement {
     if (!audioRef.current) {
@@ -72,28 +75,110 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       }));
 
       try {
+        // If in surah play mode and not already in download mode, show donation modal first
+        if (surahPlayMode && !surahDownloadModeRef.current) {
+          console.log('[AudioContext] Surah mode - showing donation modal');
+          surahDownloadModeRef.current = true;
+          
+          // Show donation modal and wait for user to close it
+          await new Promise<void>((resolve) => {
+            showDonationModal(() => {
+              console.log('[AudioContext] Donation modal closed, continuing playback');
+              resolve();
+            });
+          });
+        }
+
         // Check cache first
         let blob = await getCachedAudio(cacheKey);
+        console.log('[AudioContext] Cache check:', cacheKey, 'Found:', !!blob, 'surahPlayMode:', surahPlayMode);
 
         if (!blob) {
-          // Download from Firebase Storage (requires auth)
-          const auth = getAuth();
-          if (!auth.currentUser) {
-            setState((prev) => ({
-              ...prev,
-              status: 'error',
-              errorMessage: 'Sila log masuk untuk mendengar audio',
-            }));
-            return;
+          console.log('[AudioContext] No cache, requesting consent...');
+          // If in surah download mode, skip consent and download directly
+          if (surahDownloadModeRef.current) {
+            const auth = getAuth();
+            if (!auth.currentUser) {
+              setState((prev) => ({
+                ...prev,
+                status: 'error',
+                errorMessage: 'Sila log masuk untuk mendengar audio',
+              }));
+              return;
+            }
+
+            const storage = getStorage();
+            const path = buildAudioPath(reciter.language, reciter.id, ayah.surahNumber, ayah.ayahNumberInSurah);
+            const storageRef = ref(storage, path);
+            blob = await getBlob(storageRef);
+            await cacheAudio(cacheKey, blob);
+          } else {
+            // Request user consent before downloading
+            // If playing entire surah, always download entire surah (no option needed)
+            const consent = await requestConsent(ayah.surahNumber, { 
+              showSurahOption: !surahPlayMode // Only show option if NOT in surah play mode
+            });
+            if (!consent.accepted) {
+              setState((prev) => ({
+                ...prev,
+                status: 'idle',
+                currentAyah: null,
+              }));
+              return;
+            }
+
+            // If in surah play mode, download all ayahs (no option shown to user)
+            if (surahPlayMode) {
+              setState((prev) => ({
+                ...prev,
+                status: 'loading',
+                errorMessage: 'Memuat turun seluruh surah...',
+              }));
+
+              for (let i = 1; i <= totalAyahs; i++) {
+                const ayahCacheKey = `${reciter.language}/${reciter.id}/${ayah.surahNumber}/${i}`;
+                const existingBlob = await getCachedAudio(ayahCacheKey);
+                
+                if (!existingBlob) {
+                  const auth = getAuth();
+                  if (!auth.currentUser) {
+                    throw new Error('Sila log masuk untuk mendengar audio');
+                  }
+
+                  const storage = getStorage();
+                  const path = buildAudioPath(reciter.language, reciter.id, ayah.surahNumber, i);
+                  const storageRef = ref(storage, path);
+                  const ayahBlob = await getBlob(storageRef);
+                  await cacheAudio(ayahCacheKey, ayahBlob);
+                }
+              }
+
+              // Now get the current ayah blob from cache
+              blob = await getCachedAudio(cacheKey);
+              if (!blob) {
+                throw new Error('Failed to cache audio');
+              }
+            } else {
+              // Download single ayah only
+              const auth = getAuth();
+              if (!auth.currentUser) {
+                setState((prev) => ({
+                  ...prev,
+                  status: 'error',
+                  errorMessage: 'Sila log masuk untuk mendengar audio',
+                }));
+                return;
+              }
+
+              const storage = getStorage();
+              const path = buildAudioPath(reciter.language, reciter.id, ayah.surahNumber, ayah.ayahNumberInSurah);
+              const storageRef = ref(storage, path);
+              blob = await getBlob(storageRef);
+
+              // Cache to device
+              await cacheAudio(cacheKey, blob);
+            }
           }
-
-          const storage = getStorage();
-          const path = buildAudioPath(reciter.language, reciter.id, ayah.surahNumber, ayah.ayahNumberInSurah);
-          const storageRef = ref(storage, path);
-          blob = await getBlob(storageRef);
-
-          // Cache to device
-          await cacheAudio(cacheKey, blob);
         }
 
         // Play from blob
@@ -189,6 +274,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     clearAudioHandlers();
     audio.pause();
     audio.src = '';
+    surahDownloadModeRef.current = false;
     setState({ ...DEFAULT_STATE, reciter: stateRef.current.reciter });
   }
 

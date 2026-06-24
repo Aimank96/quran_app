@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { LangProvider } from './context/LangContext.tsx';
 import { AudioProvider } from './context/AudioContext.tsx';
+import { DownloadConsentProvider } from './context/DownloadConsentContext.tsx';
 import { Header } from './components/Header.tsx';
 import { AudioPlayerBar } from './components/AudioPlayerBar.tsx';
 import { HomePage } from './pages/HomePage.tsx';
@@ -41,12 +42,14 @@ function AppLayout() {
 export default function App() {
   return (
     <LangProvider>
-      <AudioProvider>
-        <BrowserRouter>
-          <ScrollToTop />
-          <AppLayout />
-        </BrowserRouter>
-      </AudioProvider>
+      <DownloadConsentProvider>
+        <AudioProvider>
+          <BrowserRouter>
+            <ScrollToTop />
+            <AppLayout />
+          </BrowserRouter>
+        </AudioProvider>
+      </DownloadConsentProvider>
     </LangProvider>
   );
 }

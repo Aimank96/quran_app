@@ -143,7 +143,7 @@ export async function getCachedKeys(): Promise<string[]> {
       const store = transaction.objectStore(STORE_NAME);
       const request = store.getAllKeys();
 
-      request.onsuccess = () => resolve(request.result);
+      request.onsuccess = () => resolve(request.result as string[]);
       request.onerror = () => reject(request.error);
     });
   } catch {

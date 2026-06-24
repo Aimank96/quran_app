@@ -1,4 +1,5 @@
 import { useAudio } from '../context/AudioContext';
+import { useAuth } from '../hooks/useAuth';
 
 interface AudioPlayButtonProps {
   surahNumber: number;
@@ -7,6 +8,7 @@ interface AudioPlayButtonProps {
 
 export function AudioPlayButton({ surahNumber, ayahNumberInSurah }: AudioPlayButtonProps) {
   const { status, currentAyah, playAyah, pause, resume } = useAudio();
+  const { user } = useAuth();
 
   const isThisAyah =
     currentAyah?.surahNumber === surahNumber &&
@@ -18,6 +20,11 @@ export function AudioPlayButton({ surahNumber, ayahNumberInSurah }: AudioPlayBut
   const isActive = isThisAyah && (isPlaying || isLoading || isPaused);
 
   function handleClick() {
+    if (!user) {
+      alert('Sila log masuk untuk mendengar audio');
+      return;
+    }
+    
     if (isPlaying) {
       pause();
     } else if (isPaused) {
@@ -30,8 +37,11 @@ export function AudioPlayButton({ surahNumber, ayahNumberInSurah }: AudioPlayBut
   return (
     <button
       onClick={handleClick}
+      disabled={!user}
       className={`flex h-7 w-7 items-center justify-center rounded-full transition ${
-        isActive
+        !user
+          ? 'text-gray-300 cursor-not-allowed'
+          : isActive
           ? 'bg-emerald-600 text-white hover:bg-emerald-700'
           : 'text-stone-400 hover:bg-emerald-50 hover:text-emerald-600'
       }`}
