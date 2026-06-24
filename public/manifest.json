@@ -1,0 +1,26 @@
+{
+  "name": "Quran Reader",
+  "short_name": "Quran",
+  "description": "Read the Quran with audio recitations and translations. Works offline!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafaf8",
+  "theme_color": "#b45309",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["productivity", "education"],
+  "screenshots": [
+    {
+      "src": "/assets/hero.png",
+      "sizes": "540x720",
+      "type": "image/png"
+    }
+  ]
+}

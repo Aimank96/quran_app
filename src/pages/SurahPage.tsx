@@ -3,6 +3,7 @@ import { useSurahDetail } from '../hooks/useSurahDetail.ts';
 import { useLang } from '../context/LangContext.tsx';
 import { AyahVerse } from '../components/AyahVerse.tsx';
 import { LoadingSpinner } from '../components/LoadingSpinner.tsx';
+import { SurahPlayAllButton } from '../components/SurahPlayAllButton.tsx';
 
 const BISMILLAH = 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ';
 const BISMILLAH_RUMI = 'Bismillaahir Rahmaanir Raheem';
@@ -51,6 +52,9 @@ export function SurahPage() {
             {arabic.revelationType}
           </span>
         </p>
+        <div className="mt-4">
+          <SurahPlayAllButton surahNumber={num} totalAyahs={arabic.numberOfAyahs} />
+        </div>
       </div>
 
       {/* Bismillah */}
@@ -71,6 +75,7 @@ export function SurahPage() {
             arabicAyah={arAyah}
             transliterationAyah={transliteration.ayahs[i]}
             translationAyah={translation.ayahs[i]}
+            surahNumber={num}
           />
         ))}
       </div>

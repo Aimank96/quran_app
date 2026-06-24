@@ -1,0 +1,17 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Audio files: publicly readable (no auth needed for playback)
+    // Only service account (upload script) can write during initial bulk upload
+    match /audio/{allPaths=**} {
+      allow read: if true;
+      allow write: if false; // uploads via service account only
+    }
+
+    // Everything else is private by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

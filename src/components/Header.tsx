@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLang } from '../context/LangContext.tsx';
+import { UserMenu } from './UserMenu.tsx';
 
 export function Header() {
   const [query, setQuery] = useState('');
@@ -33,6 +34,9 @@ export function Header() {
             className="w-full rounded-lg border border-stone-300 bg-stone-50 px-3 py-1.5 text-sm text-gray-700 placeholder-gray-400 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
           />
         </form>
+
+        {/* User menu */}
+        <UserMenu />
 
         {/* Language toggle */}
         <div className="flex items-center rounded-lg border border-stone-300 overflow-hidden shrink-0">
