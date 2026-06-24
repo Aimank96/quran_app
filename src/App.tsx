@@ -4,8 +4,6 @@ import { LangProvider } from './context/LangContext.tsx';
 import { AudioProvider } from './context/AudioContext.tsx';
 import { Header } from './components/Header.tsx';
 import { AudioPlayerBar } from './components/AudioPlayerBar.tsx';
-import { DonationPrompt } from './components/DonationPrompt.tsx';
-import { OfflineInfoBanner } from './components/OfflineInfoBanner.tsx';
 import { HomePage } from './pages/HomePage.tsx';
 import { SurahPage } from './pages/SurahPage.tsx';
 import { SearchPage } from './pages/SearchPage.tsx';
@@ -26,7 +24,6 @@ function AppLayout() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <OfflineInfoBanner />
       <Header />
       <main className={`mx-auto max-w-5xl px-4 py-8 ${isAudioActive ? 'pb-28' : ''}`}>
         <Routes>
@@ -37,7 +34,6 @@ function AppLayout() {
         </Routes>
       </main>
       <AudioPlayerBar />
-      <DonationPrompt />
     </div>
   );
 }
