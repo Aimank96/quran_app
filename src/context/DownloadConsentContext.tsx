@@ -174,7 +174,8 @@ export function DownloadConsentProvider({ children }: { children: ReactNode }) {
       )}
       {showDonation && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
+          <div className="bg-white rounded-xl max-w-md w-full shadow-2xl max-h-[90vh] flex flex-col">
+            <div className="overflow-y-auto p-6 flex-1">
             <div className="text-center mb-4">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 rounded-full mb-3">
                 <svg className="w-8 h-8 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
@@ -211,7 +212,7 @@ export function DownloadConsentProvider({ children }: { children: ReactNode }) {
                 <img
                   src="/qr-donation.png"
                   alt="QR Code Derma"
-                  className="w-64 h-64 object-contain"
+                  className="w-48 h-48 sm:w-64 sm:h-64 object-contain"
                 />
               </div>
               <p className="text-center text-xs text-gray-500 mt-3">
@@ -225,7 +226,9 @@ export function DownloadConsentProvider({ children }: { children: ReactNode }) {
                 Semoga menjadi asbab keberkatan dunia dan akhirat.
               </p>
             </div>
+            </div>
 
+            <div className="p-6 pt-0">
             <button
               onClick={() => {
                 setShowDonation(false);
@@ -237,6 +240,7 @@ export function DownloadConsentProvider({ children }: { children: ReactNode }) {
             >
               Tutup
             </button>
+            </div>
           </div>
         </div>
       )}
