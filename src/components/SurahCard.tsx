@@ -5,7 +5,7 @@ export function SurahCard({ surah }: { surah: SurahInfo }) {
   return (
     <Link
       to={`/surah/${surah.number}`}
-      className="flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm transition hover:shadow-md hover:bg-emerald-50/40"
+      className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm transition hover:shadow-md hover:bg-emerald-50/40 overflow-hidden"
     >
       {/* Surah number badge */}
       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-sm font-bold text-amber-800">
@@ -33,7 +33,7 @@ export function SurahCard({ surah }: { surah: SurahInfo }) {
       </div>
 
       {/* Arabic name */}
-      <span className="font-arabic text-xl text-gray-800 shrink-0" dir="rtl">
+      <span className="font-arabic text-lg text-gray-800 shrink-0 text-right" dir="rtl">
         {surah.name}
       </span>
     </Link>

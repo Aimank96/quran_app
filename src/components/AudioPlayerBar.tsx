@@ -2,13 +2,14 @@ import { useAudio } from '../context/AudioContext';
 import { ReciterSelector } from './ReciterSelector';
 
 export function AudioPlayerBar() {
-  const { status, currentAyah, surahPlayMode, pause, resume, stop } = useAudio();
+  const { status, currentAyah, surahPlayMode, activeLanguage, recitationMode, pause, resume, stop } = useAudio();
 
   if (status === 'idle') return null;
 
   const isPlaying = status === 'playing';
   const isLoading = status === 'loading';
   const isError = status === 'error';
+  const showLangBadge = surahPlayMode && recitationMode === 'arabic-then-malay';
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-stone-200 bg-white/95 shadow-lg backdrop-blur-sm">
@@ -21,6 +22,11 @@ export function AudioPlayerBar() {
               {surahPlayMode && (
                 <span className="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-xs text-emerald-700">
                   Keseluruhan
+                </span>
+              )}
+              {showLangBadge && (
+                <span className="ml-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700">
+                  {activeLanguage === 'arabic' ? 'Arab' : 'Malay'}
                 </span>
               )}
             </p>

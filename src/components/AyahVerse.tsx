@@ -24,7 +24,10 @@ export function AyahVerse({ arabicAyah, transliterationAyah, translationAyah, su
             surahNumber={surahNumber}
             ayahNumberInSurah={arabicAyah.numberInSurah}
           />
-          <MalayAudioPlaceholder />
+          <MalayAudioPlaceholder
+            surahNumber={surahNumber}
+            ayahNumberInSurah={arabicAyah.numberInSurah}
+          />
           <BookmarkButton
             surahNumber={surahNumber}
             ayahNumber={arabicAyah.numberInSurah}

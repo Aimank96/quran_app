@@ -10,15 +10,16 @@ import { getStorage, ref, getBlob } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
 import { buildAudioPath } from '../utils/audioUrl';
 import { cacheAudio, getCachedAudio } from '../utils/audioCache';
-import { RECITERS, type AudioState, type PlayingAyah, type Reciter } from '../types/audio';
+import { RECITERS, type AudioState, type PlayingAyah, type Reciter, type RecitationMode } from '../types/audio';
 import { useDownloadConsent } from './DownloadConsentContext';
 
 interface AudioContextValue extends AudioState {
   playAyah: (surahNumber: number, ayahNumberInSurah: number) => void;
+  playAyahWithReciter: (surahNumber: number, ayahNumberInSurah: number, reciter: Reciter) => void;
   pause: () => void;
   resume: () => void;
   stop: () => void;
-  playEntireSurah: (surahNumber: number, totalAyahs: number) => void;
+  playEntireSurah: (surahNumber: number, totalAyahs: number, mode?: RecitationMode) => void;
   setReciter: (reciter: Reciter) => void;
   isPlayingAyah: (surahNumber: number, ayahNumberInSurah: number) => boolean;
 }
@@ -32,6 +33,8 @@ const DEFAULT_STATE: AudioState = {
   surahPlayMode: false,
   totalAyahsInSurah: 0,
   errorMessage: null,
+  recitationMode: 'arabic',
+  activeLanguage: 'arabic',
 };
 
 export function AudioProvider({ children }: { children: ReactNode }) {
@@ -40,8 +43,13 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   // Use refs to access current state inside event handlers without stale closure
   const stateRef = useRef(state);
   stateRef.current = state;
+  const activeLanguageRef = useRef<'arabic' | 'malay'>('arabic');
   const { requestConsent, showDonationModal } = useDownloadConsent();
   const surahDownloadModeRef = useRef<boolean>(false);
+
+  function getReciterForLanguage(language: 'arabic' | 'malay'): Reciter {
+    return RECITERS.find(r => r.language === language)!;
+  }
 
   function getAudio(): HTMLAudioElement {
     if (!audioRef.current) {
@@ -58,7 +66,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   }
 
   const playAyahInternal = useCallback(
-    async (ayah: PlayingAyah, surahPlayMode: boolean, totalAyahs: number, reciter: Reciter) => {
+    async (ayah: PlayingAyah, surahPlayMode: boolean, totalAyahs: number, reciter: Reciter, mode: RecitationMode = 'arabic') => {
       const audio = getAudio();
       clearAudioHandlers();
       audio.pause();
@@ -135,21 +143,30 @@ export function AudioProvider({ children }: { children: ReactNode }) {
                 errorMessage: 'Memuat turun seluruh surah...',
               }));
 
-              for (let i = 1; i <= totalAyahs; i++) {
-                const ayahCacheKey = `${reciter.language}/${reciter.id}/${ayah.surahNumber}/${i}`;
-                const existingBlob = await getCachedAudio(ayahCacheKey);
-                
-                if (!existingBlob) {
-                  const auth = getAuth();
-                  if (!auth.currentUser) {
-                    throw new Error('Sila log masuk untuk mendengar audio');
-                  }
+              // Determine which languages to download based on mode
+              const languages: Array<'arabic' | 'malay'> =
+                mode === 'arabic-then-malay'
+                  ? ['arabic', 'malay']
+                  : [mode === 'malay' ? 'malay' : 'arabic'];
 
-                  const storage = getStorage();
-                  const path = buildAudioPath(reciter.language, reciter.id, ayah.surahNumber, i);
-                  const storageRef = ref(storage, path);
-                  const ayahBlob = await getBlob(storageRef);
-                  await cacheAudio(ayahCacheKey, ayahBlob);
+              for (const lang of languages) {
+                const langReciter = getReciterForLanguage(lang);
+                for (let i = 1; i <= totalAyahs; i++) {
+                  const ayahCacheKey = `${langReciter.language}/${langReciter.id}/${ayah.surahNumber}/${i}`;
+                  const existingBlob = await getCachedAudio(ayahCacheKey);
+                  
+                  if (!existingBlob) {
+                    const auth = getAuth();
+                    if (!auth.currentUser) {
+                      throw new Error('Sila log masuk untuk mendengar audio');
+                    }
+
+                    const storage = getStorage();
+                    const path = buildAudioPath(langReciter.language, langReciter.id, ayah.surahNumber, i);
+                    const storageRef = ref(storage, path);
+                    const ayahBlob = await getBlob(storageRef);
+                    await cacheAudio(ayahCacheKey, ayahBlob);
+                  }
                 }
               }
 
@@ -214,15 +231,55 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       audio.onended = () => {
         const cur = stateRef.current;
         if (cur.surahPlayMode && cur.currentAyah) {
-          const nextAyah = cur.currentAyah.ayahNumberInSurah + 1;
-          if (nextAyah <= cur.totalAyahsInSurah) {
-            playAyahInternal(
-              { surahNumber: cur.currentAyah.surahNumber, ayahNumberInSurah: nextAyah },
-              true,
-              cur.totalAyahsInSurah,
-              cur.reciter
-            );
-            return;
+          const currentMode = cur.recitationMode;
+          const currentLang = activeLanguageRef.current;
+          const currentAyahNum = cur.currentAyah.ayahNumberInSurah;
+          const surahNum = cur.currentAyah.surahNumber;
+
+          if (currentMode === 'arabic-then-malay') {
+            if (currentLang === 'arabic') {
+              // Arabic just finished -> play Malay for SAME ayah
+              const malayReciter = getReciterForLanguage('malay');
+              activeLanguageRef.current = 'malay';
+              setState(prev => ({ ...prev, activeLanguage: 'malay' }));
+              playAyahInternal(
+                { surahNumber: surahNum, ayahNumberInSurah: currentAyahNum },
+                true,
+                cur.totalAyahsInSurah,
+                malayReciter,
+                currentMode
+              );
+              return;
+            } else {
+              // Malay just finished -> advance to NEXT ayah, play Arabic
+              const nextAyah = currentAyahNum + 1;
+              if (nextAyah <= cur.totalAyahsInSurah) {
+                const arabicReciter = getReciterForLanguage('arabic');
+                activeLanguageRef.current = 'arabic';
+                setState(prev => ({ ...prev, activeLanguage: 'arabic' }));
+                playAyahInternal(
+                  { surahNumber: surahNum, ayahNumberInSurah: nextAyah },
+                  true,
+                  cur.totalAyahsInSurah,
+                  arabicReciter,
+                  currentMode
+                );
+                return;
+              }
+            }
+          } else {
+            // Single-language mode (arabic-only or malay-only)
+            const nextAyah = currentAyahNum + 1;
+            if (nextAyah <= cur.totalAyahsInSurah) {
+              playAyahInternal(
+                { surahNumber: surahNum, ayahNumberInSurah: nextAyah },
+                true,
+                cur.totalAyahsInSurah,
+                cur.reciter,
+                currentMode
+              );
+              return;
+            }
           }
         }
         setState((prev) => ({
@@ -230,6 +287,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
           status: 'idle',
           currentAyah: null,
           surahPlayMode: false,
+          activeLanguage: 'arabic',
         }));
       };
 
@@ -255,6 +313,15 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     );
   }
 
+  function playAyahWithReciter(surahNumber: number, ayahNumberInSurah: number, reciter: Reciter) {
+    playAyahInternal(
+      { surahNumber, ayahNumberInSurah },
+      false,
+      stateRef.current.totalAyahsInSurah,
+      reciter
+    );
+  }
+
   function pause() {
     getAudio().pause();
     setState((prev) => ({ ...prev, status: 'paused' }));
@@ -275,15 +342,26 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     audio.pause();
     audio.src = '';
     surahDownloadModeRef.current = false;
+    activeLanguageRef.current = 'arabic';
     setState({ ...DEFAULT_STATE, reciter: stateRef.current.reciter });
   }
 
-  function playEntireSurah(surahNumber: number, totalAyahs: number) {
+  function playEntireSurah(surahNumber: number, totalAyahs: number, mode: RecitationMode = 'arabic') {
+    const initialLanguage = mode === 'malay' ? 'malay' : 'arabic';
+    const reciter = getReciterForLanguage(initialLanguage);
+    activeLanguageRef.current = initialLanguage;
+    setState(prev => ({
+      ...prev,
+      reciter,
+      recitationMode: mode,
+      activeLanguage: initialLanguage,
+    }));
     playAyahInternal(
       { surahNumber, ayahNumberInSurah: 1 },
       true,
       totalAyahs,
-      stateRef.current.reciter
+      reciter,
+      mode
     );
   }
 
@@ -303,7 +381,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
 
   return (
     <AudioContext.Provider
-      value={{ ...state, playAyah, pause, resume, stop, playEntireSurah, setReciter, isPlayingAyah }}
+      value={{ ...state, playAyah, playAyahWithReciter, pause, resume, stop, playEntireSurah, setReciter, isPlayingAyah }}
     >
       {children}
     </AudioContext.Provider>

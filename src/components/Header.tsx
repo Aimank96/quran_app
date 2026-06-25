@@ -17,7 +17,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-10 border-b border-stone-200 bg-white/90 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-3">
+      <div className="mx-auto flex max-w-5xl items-center gap-2 px-3 py-3 overflow-hidden">
         <Link
           to="/"
           className="text-lg font-bold text-emerald-700 shrink-0 hover:text-emerald-800 transition"
@@ -25,7 +25,7 @@ export function Header() {
           Quran Reader
         </Link>
 
-        <form onSubmit={handleSubmit} className="flex-1 max-w-md ml-auto">
+        <form onSubmit={handleSubmit} className="flex-1 min-w-0 ml-auto">
           <input
             type="text"
             value={query}
