@@ -1,0 +1,1 @@
+- `npm run download-data`: Executes `node download-data.cjs && node build-search-index.cjs` to populate `public/data/` with Surah JSON files and search indices.

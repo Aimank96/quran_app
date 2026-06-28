@@ -1,0 +1,15 @@
+schema_version: 1
+module_path: error_handling
+title: Error Handling Patterns
+scope: []
+source_files:
+    - src/api/quranApi.ts
+    - src/hooks/useSurahDetail.ts
+    - src/hooks/useSearch.ts
+    - src/hooks/useBookmarks.ts
+    - src/hooks/useNotes.ts
+    - src/context/AuthContext.tsx
+    - src/context/AudioContext.tsx
+    - src/utils/audioCache.ts
+depends_on: []
+related_to: []

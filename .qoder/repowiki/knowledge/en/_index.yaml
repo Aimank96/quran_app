@@ -1,0 +1,268 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: en-US
+branch: main
+nodes_managed: true
+exported_at: "2026-06-28T10:22:09Z"
+modules:
+    "":
+        dir_name: Quran Web Application
+        title: Quran Web Application
+        scope:
+            - README.md
+            - .firebaserc
+            - .gitignore
+            - firebase.json
+            - firestore.indexes.json
+            - firestore.rules
+            - index.html
+            - package-lock.json
+            - package.json
+            - storage.rules
+            - tsconfig.json
+            - vercel.json
+            - vite.config.ts
+            - src/
+            - public/
+            - .env.example
+            - .env.local
+            - public\data\search-en.json
+            - public\data\search-ms.json
+            - public\data\surah-1.json
+            - public\data\surah-10.json
+            - public\data\surah-100.json
+            - public\data\surah-101.json
+            - public\data\surah-102.json
+            - public\data\surah-103.json
+            - public\data\surah-104.json
+            - public\data\surah-105.json
+            - public\data\surah-106.json
+            - public\data\surah-107.json
+            - public\data\surah-108.json
+            - public\data\surah-109.json
+            - public\data\surah-11.json
+            - public\data\surah-110.json
+            - public\data\surah-111.json
+            - public\data\surah-112.json
+            - public\data\surah-113.json
+            - public\data\surah-114.json
+            - public\data\surah-12.json
+            - public\data\surah-13.json
+            - public\data\surah-14.json
+            - public\data\surah-15.json
+            - public\data\surah-16.json
+            - public\data\surah-17.json
+            - public\data\surah-18.json
+            - public\data\surah-19.json
+            - public\data\surah-2.json
+            - public\data\surah-20.json
+            - public\data\surah-21.json
+            - public\data\surah-22.json
+            - public\data\surah-23.json
+            - public\data\surah-24.json
+            - public\data\surah-25.json
+            - public\data\surah-26.json
+            - public\data\surah-27.json
+            - public\data\surah-28.json
+            - public\data\surah-29.json
+            - public\data\surah-3.json
+            - public\data\surah-30.json
+            - public\data\surah-31.json
+            - public\data\surah-32.json
+            - public\data\surah-33.json
+            - public\data\surah-34.json
+            - public\data\surah-35.json
+            - public\data\surah-36.json
+            - public\data\surah-37.json
+            - public\data\surah-38.json
+            - public\data\surah-39.json
+            - public\data\surah-4.json
+            - public\data\surah-40.json
+            - public\data\surah-41.json
+            - public\data\surah-42.json
+            - public\data\surah-43.json
+            - public\data\surah-44.json
+            - public\data\surah-45.json
+            - public\data\surah-46.json
+            - public\data\surah-47.json
+            - public\data\surah-48.json
+            - public\data\surah-49.json
+            - public\data\surah-5.json
+            - public\data\surah-50.json
+            - public\data\surah-51.json
+            - public\data\surah-52.json
+            - public\data\surah-53.json
+            - public\data\surah-54.json
+            - public\data\surah-55.json
+            - public\data\surah-56.json
+            - public\data\surah-57.json
+            - public\data\surah-58.json
+            - public\data\surah-59.json
+            - public\data\surah-6.json
+            - public\data\surah-60.json
+            - public\data\surah-61.json
+            - public\data\surah-62.json
+            - public\data\surah-63.json
+            - public\data\surah-64.json
+            - public\data\surah-65.json
+            - public\data\surah-66.json
+            - public\data\surah-67.json
+            - public\data\surah-68.json
+            - public\data\surah-69.json
+            - public\data\surah-7.json
+            - public\data\surah-70.json
+            - public\data\surah-71.json
+            - public\data\surah-72.json
+            - public\data\surah-73.json
+            - public\data\surah-74.json
+            - public\data\surah-75.json
+            - public\data\surah-76.json
+            - public\data\surah-77.json
+            - public\data\surah-78.json
+            - public\data\surah-79.json
+            - public\data\surah-8.json
+            - public\data\surah-80.json
+            - public\data\surah-81.json
+            - public\data\surah-82.json
+            - public\data\surah-83.json
+            - public\data\surah-84.json
+            - public\data\surah-85.json
+            - public\data\surah-86.json
+            - public\data\surah-87.json
+            - public\data\surah-88.json
+            - public\data\surah-89.json
+            - public\data\surah-9.json
+            - public\data\surah-90.json
+            - public\data\surah-91.json
+            - public\data\surah-92.json
+            - public\data\surah-93.json
+            - public\data\surah-94.json
+            - public\data\surah-95.json
+            - public\data\surah-96.json
+            - public\data\surah-97.json
+            - public\data\surah-98.json
+            - public\data\surah-99.json
+            - public\data\surahs.json
+            - public\favicon.svg
+            - public\icons.svg
+            - public\manifest.json
+            - public\qr-donation.png
+            - src\App.tsx
+            - src\api\quranApi.ts
+            - src\assets\hero.png
+            - src\components\AudioPlayButton.tsx
+            - src\components\AudioPlayerBar.tsx
+            - src\components\AyahVerse.tsx
+            - src\components\BookmarkButton.tsx
+            - src\components\DonationModal.tsx
+            - src\components\Header.tsx
+            - src\components\LoadingSpinner.tsx
+            - src\components\LoginButton.tsx
+            - src\components\MalayAudioPlaceholder.tsx
+            - src\components\NoteButton.tsx
+            - src\components\RecitationModeSelector.tsx
+            - src\components\ReciterSelector.tsx
+            - src\components\SearchResults.tsx
+            - src\components\SurahCard.tsx
+            - src\components\SurahPlayAllButton.tsx
+            - src\components\UserMenu.tsx
+            - src\context\AudioContext.tsx
+            - src\context\AuthContext.tsx
+            - src\context\DownloadConsentContext.tsx
+            - src\context\LangContext.tsx
+            - src\hooks\useAudio.ts
+            - src\hooks\useAuth.ts
+            - src\hooks\useBookmarks.ts
+            - src\hooks\useNotes.ts
+            - src\hooks\useSearch.ts
+            - src\hooks\useSurahDetail.ts
+            - src\hooks\useSurahList.ts
+            - src\index.css
+            - src\lib\firebase.ts
+            - src\lib\firebaseConfig.ts
+            - src\main.tsx
+            - src\pages\BookmarksPage.tsx
+            - src\pages\HomePage.tsx
+            - src\pages\SearchPage.tsx
+            - src\pages\SurahPage.tsx
+            - src\types\audio.ts
+            - src\types\firebase.ts
+            - src\types\quran.ts
+            - src\utils\audioCache.ts
+            - src\utils\audioUrl.ts
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    build_system:
+        dir_name: Vite-based Build & Multi-Platform Deployment
+        title: Vite-based Build & Multi-Platform Deployment
+        scope: []
+        source_files:
+            - package.json
+            - vite.config.ts
+            - tsconfig.json
+            - firebase.json
+            - vercel.json
+            - index.html
+        children: []
+        depends_on: []
+        related_to: []
+    configuration_system:
+        dir_name: Vite Environment Variables and Firebase Configuration
+        title: Vite Environment Variables and Firebase Configuration
+        scope: []
+        source_files:
+            - .env.example
+            - src/lib/firebaseConfig.ts
+            - src/lib/firebase.ts
+            - vite.config.ts
+            - firebase.json
+            - tsconfig.json
+        children: []
+        depends_on: []
+        related_to: []
+    dependency_management:
+        dir_name: NPM and Vite Dependency Management
+        title: NPM and Vite Dependency Management
+        scope: []
+        source_files:
+            - package.json
+            - package-lock.json
+            - vite.config.ts
+            - tsconfig.json
+            - README.md
+        children: []
+        depends_on: []
+        related_to: []
+    error_handling:
+        dir_name: Error Handling Patterns
+        title: Error Handling Patterns
+        scope: []
+        source_files:
+            - src/api/quranApi.ts
+            - src/hooks/useSurahDetail.ts
+            - src/hooks/useSearch.ts
+            - src/hooks/useBookmarks.ts
+            - src/hooks/useNotes.ts
+            - src/context/AuthContext.tsx
+            - src/context/AudioContext.tsx
+            - src/utils/audioCache.ts
+        children: []
+        depends_on: []
+        related_to: []
+    frontend_style:
+        dir_name: Tailwind CSS v4 Utility-First Styling System
+        title: Tailwind CSS v4 Utility-First Styling System
+        scope: []
+        source_files:
+            - src/index.css
+            - vite.config.ts
+            - package.json
+            - src/components/Header.tsx
+            - src/components/SurahCard.tsx
+            - src/components/AyahVerse.tsx
+            - src/pages/HomePage.tsx
+        children: []
+        depends_on: []
+        related_to: []

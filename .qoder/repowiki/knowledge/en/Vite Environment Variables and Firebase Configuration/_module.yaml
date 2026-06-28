@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: configuration_system
+title: Vite Environment Variables and Firebase Configuration
+scope: []
+source_files:
+    - .env.example
+    - src/lib/firebaseConfig.ts
+    - src/lib/firebase.ts
+    - vite.config.ts
+    - firebase.json
+    - tsconfig.json
+depends_on: []
+related_to: []

@@ -1,0 +1,6 @@
+- Entry point: `src/main.tsx` bootstraps React with `AuthProvider`.
+- Routing & Layout: `src/App.tsx` uses `react-router-dom` for page navigation (`HomePage`, `SurahPage`, `SearchPage`, `BookmarksPage`) and wraps the app in `LangProvider`, `DownloadConsentProvider`, and `AudioProvider`.
+- State Management: React Context API is used for global state (`AuthContext`, `AudioContext`, `LangContext`, `DownloadConsentContext`).
+- Data Layer: `src/api/quranApi.ts` fetches static JSON data from `public/data/` for Surah lists, details, and search indices.
+- Audio Engine: `src/context/AudioContext.tsx` manages HTML5 Audio playback, Firebase Storage integration for recitations, and IndexedDB caching via `src/utils/audioCache.ts`.
+- UI Structure: Components in `src/components/` are presentational, while `src/hooks/` encapsulate data fetching and business logic (e.g., `useSurahList`, `useSearch`).

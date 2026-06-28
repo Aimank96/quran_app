@@ -1,0 +1,4 @@
+- Custom hooks are used to encapsulate data fetching and state logic, separating them from presentational components (e.g., `useSurahList` in `HomePage`).
+- React Context providers are used for global state management (Auth, Audio, Language), with custom hooks (e.g., `useAuth`, `useAudio`) providing typed access to context values.
+- Static data (Surahs, translations) is served as pre-built JSON files from the `public/data/` directory rather than fetched from a dynamic API server.
+- TypeScript interfaces for domain models (e.g., `SurahInfo`, `Ayah`) are centralized in `src/types/` and shared across API, components, and hooks.

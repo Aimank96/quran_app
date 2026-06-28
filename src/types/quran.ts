@@ -7,6 +7,13 @@ export interface SurahInfo {
   revelationType: 'Meccan' | 'Medinan';
 }
 
+export interface SurahMeta {
+  s_en: string;  // synopsis (English)
+  h_en: string;  // history (English)
+  s_ms: string;  // synopsis (Malay)
+  h_ms: string;  // history (Malay)
+}
+
 export interface Ayah {
   number: number;
   text: string;

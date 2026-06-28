@@ -1,0 +1,1 @@
+A client-side Quran reader with multilingual support, audio recitation, and user personalization features.

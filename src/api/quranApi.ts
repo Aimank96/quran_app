@@ -1,4 +1,4 @@
-import type { SurahInfo, SurahDetailData, SearchResultsData, SearchMatch } from '../types/quran.ts';
+import type { SurahInfo, SurahMeta, SurahDetailData, SearchResultsData, SearchMatch } from '../types/quran.ts';
 import type { Lang } from '../context/LangContext.tsx';
 
 export async function fetchAllSurahs(): Promise<SurahInfo[]> {
@@ -11,6 +11,24 @@ export async function fetchSurahDetail(surahNumber: number): Promise<SurahDetail
   const res = await fetch(`/data/surah-${surahNumber}.json`);
   if (!res.ok) throw new Error('Failed to load surah');
   return res.json();
+}
+
+let surahMetaData: SurahMeta[] | null = null;
+let metaDataPromise: Promise<SurahMeta[]> | null = null;
+
+export async function fetchSurahMeta(): Promise<SurahMeta[]> {
+  if (surahMetaData) return surahMetaData;
+  if (metaDataPromise) return metaDataPromise;
+  metaDataPromise = fetch('/data/surah-metadata.json')
+    .then(r => {
+      if (!r.ok) throw new Error('Failed to load surah metadata');
+      return r.json();
+    })
+    .then((data: SurahMeta[]) => {
+      surahMetaData = data;
+      return data;
+    });
+  return metaDataPromise;
 }
 
 // Client-side search using pre-built index

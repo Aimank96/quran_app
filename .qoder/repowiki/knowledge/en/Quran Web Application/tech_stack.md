@@ -1,0 +1,4 @@
+- Vite + React 19 + TypeScript.
+- Tailwind CSS v4 for styling.
+- Firebase (Auth, Firestore, Storage) for backend services.
+- IndexedDB for client-side audio caching.
